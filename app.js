@@ -12,7 +12,7 @@ const port = 5000;
 const allowedOrigins = [
   "http://localhost:5000",
   "http://localhost:8100",
-  "http://localhost:8101"
+  "http://localhost:8101",
 ];
 
 const corsOptions = {
@@ -22,7 +22,7 @@ const corsOptions = {
     } else {
       callback(new Error("Origin not allowed by CORS"));
     }
-  }
+  },
 };
 
 app.use(cors());
@@ -37,9 +37,9 @@ mongoose.connect(
   }
 );
 //TODO: reroute if http://sitename/
-app.get("/", (req, res) => {
-  res.redirect("http://localhost:8100/welcome-page");
-});
+// app.get("/", (req, res) => {
+//   res.redirect("http://localhost:8100/welcome-page");
+// });
 
 //middlewares
 app.use(bodyParser.json()); // this is to make sure all data are parsed into json format
@@ -49,6 +49,6 @@ app.use("/products", productsRoute);
 app.use("/cart", cartRoute);
 
 //listen to port
-app.listen(port, () => {
-  console.log("app running in port " + port);
+app.listen(process.env.PORT, () => {
+  console.log("app running in port " + process.env.PORT);
 });
