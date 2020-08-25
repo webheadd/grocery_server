@@ -11,14 +11,37 @@ const Users = require("../models/Users");
 exports.getCartByUserId = async (req, res) => {
   try {
     const customerID = req.params.id;
-    const cart = await Cart.findOne({ customerID: customerID });
+    const customerCart = await Cart.findOne({ customerID: customerID });
+    let cart = [];
+    await Promise.all(
+      customerCart.products.map(async (product) => {
+        try {
+          const cartItem = await Products.findOne({
+            productID: product.productID,
+          });
 
+          return cart.push({ product: cartItem, qty: product.qty });
+        } catch (error) {
+          console.log(error);
+        }
+      })
+    );
     //check if user has cart
-    if (cart) {
-      return res.send(cart);
+    if (cart.length !== 0) {
+      return res.send({
+        success: true,
+        result: {
+          cart_items: cart,
+        },
+      });
     }
 
-    return res.send("You don't have cart saved");
+    return res.send({
+      success: false,
+      result: {
+        message: "No Cart saved.",
+      },
+    });
   } catch (error) {
     return res.status(500).send("Something went wrong");
   }
@@ -31,9 +54,19 @@ exports.getCartProductDetails = async (req, res) => {
     const product = await Products.findOne({ productID: productID });
 
     if (product) {
-      return res.send(product);
+      return res.send({
+        success: true,
+        result: {
+          product: product,
+        },
+      });
     }
-    return res.send("No Product");
+    return res.send({
+      success: false,
+      result: {
+        message: "Product does not exist.",
+      },
+    });
   } catch (error) {
     return res.send("ERROR: " + error);
   }
@@ -49,8 +82,12 @@ exports.deleteCartProduct = (req, res) => {
     }
   )
     .then(() => {
-      console.log("Deleted");
-      return res.status(200).send({ message: "Product Removed" });
+      return res.status(200).send({
+        success: true,
+        result: {
+          message: "Product has been removed.",
+        },
+      });
     })
     .catch((err) => {
       res.status(500).send(err);
@@ -84,14 +121,26 @@ exports.addToCart = async (req, res) => {
 
         // then save the updated cart
         existingCart = await existingCart.save();
-        return res.send({ exist: true, cart: existingCart });
+        return res.send({
+          success: true,
+          result: {
+            exist: true,
+            cart: existingCart,
+          },
+        });
       }
 
       //not exist - add product to the cart then save
       existingCart.products.push({ productID, qty });
       existingCart = await existingCart.save();
 
-      return res.send({ exist: false, cart: existingCart });
+      return res.send({
+        success: true,
+        result: {
+          exist: false,
+          cart: existingCart,
+        },
+      });
       //update cart
     } else {
       //if customer has no existing cart, create one
@@ -105,8 +154,11 @@ exports.addToCart = async (req, res) => {
         ],
       });
       return res.send({
-        exist: false,
-        cart: newCart,
+        success: true,
+        result: {
+          exist: false,
+          cart: newCart,
+        },
       });
     }
   } catch (error) {

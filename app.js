@@ -49,6 +49,6 @@ app.use("/products", productsRoute);
 app.use("/cart", cartRoute);
 
 //listen to port
-app.listen(process.env.PORT, () => {
-  console.log("app running in port " + process.env.PORT);
+app.listen(port, () => {
+  console.log("app running in port " + port);
 });

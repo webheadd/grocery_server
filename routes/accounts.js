@@ -19,9 +19,14 @@ router.get("/getCurrentUser", async (req, res) => {
     const decodedToken = jwt.verify(token, "SECRET_KEY");
 
     const user = await Users.findOne({
-      customerID: decodedToken.subject
+      customerID: decodedToken.subject,
     }).select("-password");
-    return res.send(user);
+    return res.send({
+      success: true,
+      result: {
+        user: user,
+      },
+    });
   } catch (err) {
     res.status(500).send("Something went wrong", err);
   }
@@ -38,14 +43,19 @@ router.post("/register", async (req, res) => {
         mobile: req.body.mobile,
         fname: req.body.fname,
         lname: req.body.lname,
-        address: req.body.address
+        address: req.body.address,
       });
       customer.password = await bcrypt.hash(req.body.password, salt);
       const saveCustomer = await customer.save();
       return res.status(200).send(saveCustomer);
     }
 
-    return res.send("Username already in use");
+    return res.send({
+      success: false,
+      result: {
+        message: "Username already in use",
+      },
+    });
   } catch (error) {
     return res.status(500).send("ERROR: " + error);
   }
@@ -55,7 +65,7 @@ router.post("/register", async (req, res) => {
 router.post("/signin", async (req, res) => {
   try {
     const user = await Users.findOne({
-      mobile: req.body.mobile
+      mobile: req.body.mobile,
     });
 
     //check if user is not registered
