@@ -3,23 +3,23 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 //controllers
 const auth = require("../authenticate/auth");
-const cartController = require("../controllers/CartController");
-
-//schema
-const Products = require("../models/Products");
-const Cart = require("../models/CartItem");
-const Users = require("../models/Users");
+const {
+  getCartByUserId,
+  getCartProductDetails,
+  addToCart,
+  deleteCartProduct,
+} = require("../controllers/CartController");
 
 //get current user's cart
-router.get("/:id", auth, cartController.getCartByUserId);
+router.get("/:id", auth, getCartByUserId);
 
 //get cart product details
-router.get("/item/:id", auth, cartController.getCartProductDetails);
+router.get("/item/:id", auth, getCartProductDetails);
 
 //ADD ITEM TO CART
-router.post("/addToCart", auth, cartController.addToCart);
+router.post("/addToCart", auth, addToCart);
 
 //DELETE ITEM PRODUCT
-router.delete("/delete/:id", auth, cartController.deleteCartProduct);
+router.delete("/delete/:id", auth, deleteCartProduct);
 
 module.exports = router;

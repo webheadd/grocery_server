@@ -28,27 +28,30 @@ const corsOptions = {
 app.use(cors());
 // app.options("*", cors(corsOptions));
 // app.use("/", cors(corsOptions));
-//db connection
-mongoose.connect(
-  process.env.DB_CONNECTION,
-  { useNewUrlParser: true, useUnifiedTopology: true },
-  () => {
-    console.log("connected to db!");
-  }
-);
-//TODO: reroute if http://sitename/
-// app.get("/", (req, res) => {
-//   res.redirect("http://localhost:8100/welcome-page");
-// });
 
 //middlewares
 app.use(bodyParser.json()); // this is to make sure all data are parsed into json format
 
-app.use("/account", accountRoute);
-app.use("/products", productsRoute);
-app.use("/cart", cartRoute);
+//db connection
+mongoose
+  .connect(process.env.DB_CONNECTION, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to DB");
+    //listen to port
+    app.listen(port, () => {
+      console.log("app running in port " + port);
+    });
+  })
+  .catch((err) => console.log(err));
 
-//listen to port
-app.listen(port, () => {
-  console.log("app running in port " + port);
-});
+// Account Related Routes
+app.use("/account", accountRoute);
+
+// Product Routes
+app.use("/products", productsRoute);
+
+// Cart Routes
+app.use("/cart", cartRoute);
