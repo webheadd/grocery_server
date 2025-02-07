@@ -8,13 +8,13 @@ module.exports = {
   getCartByUserId: async (req, res) => {
     try {
       const customerID = req.params.id;
-      const customerCart = await Cart.findById(customerID);
+      const customerCart = await Cart.findOne({ customerID: customerID});
       let cart = [];
       if (customerCart) {
         await Promise.all(
           customerCart.products.map(async (product) => {
             try {
-              const cartItem = await Products.findById(product._id);
+              const cartItem = await Products.findById(product.productID);
 
               return cart.push({ product: cartItem, qty: product.qty });
             } catch (error) {
@@ -94,10 +94,9 @@ module.exports = {
     const { productID, qty } = req.body.products[0]; //pull out productid and quantity from user input
 
     const customerID = req.user.subject; // current user id
-    console.log(req, "WQEW");
     try {
       //check if customer has existing cart
-      let existingCart = await Cart.findById(customerID);
+      let existingCart = await Cart.findOne({ customerID: customerID});
 
       if (existingCart) {
         //if cart is available get index of current productID
