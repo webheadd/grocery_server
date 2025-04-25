@@ -44,11 +44,13 @@ module.exports = {
         customer.password = await bcrypt.hash(req.body.password, salt);
         customer
           .save()
-          .then(() => {
+          .then((userData) => {
+            console.log("userData Created: ", userData)
             res.status(200).send({
-              status: "OK",
+              status: true,
               result: {
                 message: "Registration Successful!",
+                user: userData
               },
             });
           })
@@ -57,7 +59,7 @@ module.exports = {
       }
 
       return res.send({
-        status: "NOK",
+        status: false,
         result: {
           message: "Mobile number already in use.",
         },
@@ -76,12 +78,11 @@ module.exports = {
       //check if user is not registered
       if (user === null || !user)
         return res.send({
-          status: "NOK",
+          status: false,
           result: {
-            message: "User does not exist.",
+            message: "Username or password is incorrect.",
           },
         });
-      // console.log(user._id);
       const payload = { subject: user._id };
 
       const token = jwt.sign(payload, process.env.SECRET_KEY);
@@ -97,12 +98,13 @@ module.exports = {
         delete userData.password;
         console.log(userData);
         return res.send({
+          status: true,
           token: token,
           currentUser: userData,
         });
       } else {
         return res.send({
-          status: "NOK",
+          status: false,
           result: {
             message: "Username or password is incorrect.",
           },
@@ -110,7 +112,7 @@ module.exports = {
       }
     } catch (error) {
       console.log(error);
-      // res.status(500).send("Something went wrong");
+      res.status(500).send("Something went wrong");
     }
   },
 };

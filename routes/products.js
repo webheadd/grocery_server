@@ -5,10 +5,14 @@ const {
   getProductsByCategoryID,
   getProductsByPromoType,
   addProduct,
+  getHomeProducts,
 } = require("../controllers/ProductsController");
 
 //get all products by promo type
 router.post("/", auth, getProductsByPromoType);
+
+//get home page products (5 for each New & Featured type)
+router.get("/home", getHomeProducts);
 
 //get all products by category ID
 router.get("/category/:id", auth, getProductsByCategoryID);

@@ -24,14 +24,14 @@ module.exports = {
         );
 
         return res.send({
-          status: "OK",
+          status: true,
           result: {
             cart_items: cart,
           },
         });
       }
       res.send({
-        status: "NOK",
+        status: false,
         result: {
           message: "No saved products.",
         },
@@ -78,7 +78,7 @@ module.exports = {
     )
       .then(() => {
         return res.status(200).send({
-          status: "OK",
+          status: true,
           result: {
             message: "Product has been removed.",
           },

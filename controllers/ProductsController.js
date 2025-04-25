@@ -1,13 +1,23 @@
 const uniqid = require("uniqid");
 const Products = require("../models/Products");
 
+const getUniqueProducts = (newProducts, featuredProducts) => {
+  const productMap = new Map();
+
+  [...newProducts, ...featuredProducts].forEach(product => {
+    productMap.set(product._id.toString(), product);
+  });
+
+  return Array.from(productMap.values());
+}
+
 module.exports = {
   addProduct: async (req, res) => {
     try {
       const productName_exist = await Products.findOne({ name: req.body.name });
       if (productName_exist) {
         return res.send({
-          status: "NOK",
+          status: false,
           result: {
             message: "Product exist, please check your cart.",
           },
@@ -27,7 +37,7 @@ module.exports = {
         .save()
         .then(() => {
           res.send({
-            status: "OK",
+            status: true,
             result: {
               message: "Product has been added.",
             },
@@ -44,7 +54,7 @@ module.exports = {
   getProductsByPromoType: async (req, res) => {
     try {
       const type = req.body.type;
-      let products = await Products.find();
+      let products;
       if (type) {
         switch (type) {
           case "new":
@@ -54,16 +64,18 @@ module.exports = {
             products = await Products.find({ is_featured: true });
             break;
         }
+      } else {
+        products = await Products.find()
       }
       if (products)
         return res.send({
-          status: "OK",
+          status: true,
           result: {
             products: products,
           },
         });
       return res.send({
-        status: "NOK",
+        status: false,
         result: {
           message: "No Products Found.",
         },
@@ -82,14 +94,14 @@ module.exports = {
           .exec();
         if (products)
           return res.send({
-            status: "OK",
+            status: true,
             result: {
               products: products,
             },
           });
 
         return res.send({
-          status: "NOK",
+          status: false,
           result: {
             message: "No Products Found.",
           },
@@ -99,14 +111,14 @@ module.exports = {
 
       if (products) {
         return res.send({
-          status: "OK",
+          status: true,
           result: {
             products: products,
           },
         });
       }
       return res.send({
-        status: "NOK",
+        status: false,
         result: {
           message: "No Products Found",
         },
@@ -115,4 +127,31 @@ module.exports = {
       return res.send("ERROR: " + error);
     }
   },
+  getHomeProducts: async (req, res) => {
+    try {
+      const [newProducts, featuredProducts] = await Promise.all([
+        Products.find({ is_new: true }).limit(5),
+        Products.find({ is_featured: true }).limit(5),
+      ]);
+      const products = getUniqueProducts(newProducts, featuredProducts);
+      console.log("[xxx] products: ", products)
+      if (products) {
+        return res.send({
+          status: true,
+          result: {
+            products: products,
+          },
+        });
+      }
+
+      return res.send({
+        status: false,
+        result: {
+          message: "No Products Found.",
+        },
+      });
+    } catch (error) {
+      return res.send("ERROR: " + error);
+    }
+  }
 };
