@@ -53,9 +53,19 @@ mongoose
 
   // Add this route to app.js
 app.get("/test-db-connection", (req, res) => {
-  mongoose.connection.readyState === 1
-    ? res.status(200).send("MongoDB is connected!")
-    : res.status(500).send("MongoDB is not connected.");
+  // mongoose.connection.readyState === 1
+  //   ? res.status(200).send("MongoDB is connected!")
+  //   : res.status(500).send("MongoDB is not connected.");
+
+    mongoose
+  .connect(process.env.DB_CONNECTION, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => res.status(200).send("Connected to DB"))
+  .catch((err) => {
+    res.status(500).send("MongoDB is not connected: " + JSON.stringify(err));
+  });
 });
 
 
