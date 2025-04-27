@@ -10,6 +10,7 @@ require("dotenv/config");
 const app = express();
 const port = 5000;
 const allowedOrigins = [
+  "*",
   "http://localhost:5000",
   "http://localhost:8100",
   "http://localhost:8101",
