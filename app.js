@@ -8,7 +8,7 @@ const cors = require("cors");
 require("dotenv/config");
 
 const app = express();
-const port = process.env.PORT || 5000;
+
 const allowedOrigins = [
   "*",
   "http://localhost:5000",
@@ -33,21 +33,6 @@ app.use(cors());
 //middlewares
 app.use(bodyParser.json()); // this is to make sure all data are parsed into json format
 
-//db connection
-mongoose
-  .connect(process.env.DB_CONNECTION, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("Connected to DB");
-    //listen to port
-    app.listen(port, () => {
-      console.log("app running in port " + port);
-    });
-  })
-  .catch((err) => console.log(err));
-
 // Account Related Routes
 app.use("/account", accountRoute);
 
@@ -56,3 +41,15 @@ app.use("/products", productsRoute);
 
 // Cart Routes
 app.use("/cart", cartRoute);
+
+// db connection
+mongoose
+  .connect(process.env.DB_CONNECTION, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("Connected to DB"))
+  .catch((err) => console.log(err));
+
+// 🚀 VERY IMPORTANT: Export the app (don't listen here)
+module.exports = app;
