@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 // controller
-const { signIn, signUp } = require("../controllers/usersController");
+const { signIn, signUp } = require("../controllers/UsersController");
 
 //get current logged in user
 // router.get("/getCurrentUser", getCurrentUser);
