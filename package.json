@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A grocery app",
   "engines": {
-    "node": "12.11.1"
+    "node": "20.11.0"
   },
   "main": "app.js",
   "scripts": {
