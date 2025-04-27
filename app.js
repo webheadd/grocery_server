@@ -51,5 +51,13 @@ mongoose
   .then(() => console.log("Connected to DB"))
   .catch((err) => console.log(err));
 
+  // Add this route to app.js
+app.get("/test-db-connection", (req, res) => {
+  mongoose.connection.readyState === 1
+    ? res.status(200).send("MongoDB is connected!")
+    : res.status(500).send("MongoDB is not connected.");
+});
+
+
 // 🚀 VERY IMPORTANT: Export the app (don't listen here)
 module.exports = app;
